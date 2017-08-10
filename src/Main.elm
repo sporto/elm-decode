@@ -7,13 +7,25 @@ import Json.Decode as Decode
 json =
     """
 {
-  "name": "Sam"
+  "first": "Sam",
+  "last": "Sample"
 }
 """
 
 
 decoder =
-    Decode.field "name" Decode.string
+    Decode.field "first" Decode.string
+        |> Decode.andThen
+            (\first ->
+                Decode.field "last" Decode.string
+                    |> Decode.andThen
+                        (\last ->
+                            Decode.succeed
+                                { first = first
+                                , last = last
+                                }
+                        )
+            )
 
 
 result =
