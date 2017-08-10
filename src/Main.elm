@@ -15,6 +15,12 @@ json =
 """
 
 
+
+{-
+   Current way to enforce values being decoded into the correct field
+-}
+
+
 decoder1 =
     Decode.field "first" Decode.string
         |> Decode.andThen
@@ -35,21 +41,39 @@ decoder1 =
             )
 
 
+decoder2 =
+    { first = "", middle = "", last = "" }
+        |> startDecoding
+        |> decodeNext (Decode.field "first" Decode.string) (\r v -> { r | first = v })
+        |> decodeNext (Decode.field "middle" Decode.string) (\r v -> { r | middle = v })
+        |> decodeNext (Decode.field "last" Decode.string) (\r v -> { r | last = v })
 
-{-
-   What I want
 
-   decoder =
-       send (Decode.field "first" Decode.string) (\first r -> {r | first = first})
-           |> send (Decode.field "middle" Decode.string) (\middle r -> {r | middle = middle})
-            |> send (Decode.field "last" Decode.string) (\last r -> {r | last = last})
+startDecoding : record -> Decode.Decoder record
+startDecoding record =
+    Decode.succeed record
 
--}
+
+decodeNext : Decode.Decoder a -> (record -> a -> record) -> Decode.Decoder record -> Decode.Decoder record
+decodeNext decoder setter result =
+    result
+        |> Decode.andThen
+            (\record ->
+                decoder
+                    |> Decode.andThen
+                        (\value ->
+                            Decode.succeed (setter record value)
+                        )
+            )
 
 
 result =
     Decode.decodeString decoder1 json
 
 
+result2 =
+    Decode.decodeString decoder2 json
+
+
 main =
-    text (toString result)
+    text (toString result2)
