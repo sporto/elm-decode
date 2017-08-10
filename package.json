@@ -1,0 +1,11 @@
+{
+  "name": "elm-decode",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:sporto/elm-decode.git",
+  "author": "Sebastian Porto <s@porto5.com>",
+  "license": "MIT",
+  "dependencies": {
+    "elm-live": "^2.7.5"
+  }
+}
