@@ -43,14 +43,14 @@ decoder1 =
 
 decoder2 =
     { first = "", middle = "", last = "" }
-        |> startDecoding
+        |> toDecoder
         |> decodeNext (Decode.field "first" Decode.string) (\r v -> { r | first = v })
         |> decodeNext (Decode.field "middle" Decode.string) (\r v -> { r | middle = v })
         |> decodeNext (Decode.field "last" Decode.string) (\r v -> { r | last = v })
 
 
-startDecoding : record -> Decode.Decoder record
-startDecoding record =
+toDecoder : record -> Decode.Decoder record
+toDecoder record =
     Decode.succeed record
 
 
@@ -73,6 +73,10 @@ result =
 
 result2 =
     Decode.decodeString decoder2 json
+
+
+
+-- Other alternative http://package.elm-lang.org/packages/eeue56/elm-alternative-json/latest
 
 
 main =
